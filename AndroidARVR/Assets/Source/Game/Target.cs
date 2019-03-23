@@ -1,0 +1,27 @@
+﻿using UnityEngine;
+
+public class Target : MonoBehaviour
+{
+    Vector3 startingPosition;
+    
+    private void Start()
+    {
+        startingPosition = transform.position;
+    }
+
+    private void Update()
+    {
+        if(Mathf.Abs(Vector3.Distance(startingPosition, transform.position)) > 2)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag.Equals("Floor"))
+        {
+            Destroy(gameObject);
+        }
+    }
+}
