@@ -12,12 +12,15 @@ public class VRControl : Control
     float placeCooldown = 0;
     EventSystem eventSystem;
     GraphicRaycaster UIRaycast;
+    float startTime;
+    bool readsInput = false;
 
     public void Start()
     {
         StartCoroutine(LoadDevice("cardboard"));
         UIRaycast = GameObject.FindObjectOfType<GraphicRaycaster>();    //Every Canvas has its own GraphicRaycaster
         eventSystem = GameObject.FindObjectOfType<EventSystem>();       //There is one EventSystem for every scene
+        startTime = Time.time;
     }
 
     IEnumerator LoadDevice(string newDevice)
@@ -55,9 +58,14 @@ public class VRControl : Control
     public void Update()
     {
         var camera = Camera.main;
+
+        if(Time.time > startTime + 3f)
+        {
+            readsInput = true;
+        }
         
         //This reads the tilt
-        if (Mathf.Abs(Mathf.DeltaAngle(camera.transform.eulerAngles.z, 0)) > 25)
+        if (Mathf.Abs(Mathf.DeltaAngle(camera.transform.eulerAngles.z, 0)) > 25 && readsInput)
         {
             canPlace = true;
         }
@@ -83,17 +91,16 @@ public class VRControl : Control
             Vector3 lookAt = Vector3.Cross(-hit.normal, Camera.main.transform.right);
             lookAt = lookAt.y < 0 ? -lookAt : lookAt;
             indicator.transform.rotation = Quaternion.LookRotation(hit.point + lookAt, hit.normal);
-            
         }
         else
         {
             currentHit = Vector3.zero;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))    //Useful in Unity editor, needs to change in build 
+        if ((Input.GetKeyDown(KeyCode.Space) || Mathf.Abs(Mathf.DeltaAngle(camera.transform.eulerAngles.z, 0)) > 25) && readsInput)    //Useful in Unity editor, needs to change in build 
         {
             var pointerData = new PointerEventData(eventSystem);
-            pointerData.position = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);  //Set here the pixel position of where you need to click
+            pointerData.position = new Vector2(XRSettings.eyeTextureWidth * 0.5f, XRSettings.eyeTextureHeight * 0.5f);  //Set here the pixel position of where you need to click
 
             List<RaycastResult> results = new List<RaycastResult>();
             UIRaycast.Raycast(pointerData, results);    //Raycasts
@@ -106,7 +113,6 @@ public class VRControl : Control
                     btn.onClick.Invoke();
                 }
             }
-
         }
     }
 }

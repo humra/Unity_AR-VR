@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Floor
   - ProjectileDestroyer
+  - ShotsLeftCounter
+  - TargetsLeftCounter
+  - EndLevelText
+  - NextLevelButton
   layers:
   - Default
   - TransparentFX

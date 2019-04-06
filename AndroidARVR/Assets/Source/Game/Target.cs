@@ -13,6 +13,7 @@ public class Target : MonoBehaviour
     {
         if(Mathf.Abs(Vector3.Distance(startingPosition, transform.position)) > 2)
         {
+            FindObjectOfType<Game>().TargetDestroyed();
             Destroy(gameObject);
         }
     }
@@ -21,6 +22,7 @@ public class Target : MonoBehaviour
     {
         if(collision.gameObject.tag.Equals("Floor"))
         {
+            FindObjectOfType<Game>().TargetDestroyed();
             Destroy(gameObject);
         }
     }

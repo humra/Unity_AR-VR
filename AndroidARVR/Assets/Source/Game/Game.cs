@@ -1,13 +1,18 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
     public static ControlType currentControlType;
-
+    public int targetsLeft;
     public Transform spawnPoint;
 
     Control currentControl;
     GameObject objectToPlace;
+    int shotsLeft = 5;
+    int lastLevelIndex = 2;
+    Button endLevelButton;
 
     public void Awake()
     {
@@ -24,27 +29,77 @@ public class Game : MonoBehaviour
         currentControl.transform.localRotation = Quaternion.identity;
         currentControl.setIndicator(Instantiate(Resources.Load<GameObject>("PlacementIndicator")));
 
-        //objectToPlace = Resources.Load<GameObject>("GamePiece");
         objectToPlace = Resources.Load<GameObject>("Projectile");
 
         initTools();
     }
 
+    private void Start()
+    {
+        var targets = FindObjectsOfType<Target>();
+        targetsLeft = targets.Length;
+        UpdateUI();
+        endLevelButton = GameObject.FindGameObjectWithTag("NextLevelButton").GetComponent<Button>();
+        endLevelButton.gameObject.SetActive(false);
+        //GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "";
+    }
+
     public void Update()
     {
         var placementPose = currentControl.getPlacementPose();
-        if(placementPose != null)
+        if(placementPose != null && shotsLeft > 0)
         {
             //This will instantiate the object if it is valid
             //Instantiate(objectToPlace, placementPose.pose.position, placementPose.pose.rotation);
             Instantiate(objectToPlace, Camera.main.transform.position + Camera.main.transform.forward * 1f, Camera.main.transform.rotation);
+            shotsLeft--;
+            UpdateUI();
+        }
+
+        if(targetsLeft == 0)
+        {
+            LevelComplete();
+        }
+        else if(shotsLeft == 0)
+        {
+            LevelFailed();
         }
     }
 
-    void initTools()
+    private void initTools()
     {
         var debugControls = gameObject.AddComponent<VREditorControls>();
         debugControls.target = currentControl.transform;
+    }
+
+    public void TargetDestroyed()
+    {
+        targetsLeft--;
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        //GameObject.FindGameObjectWithTag("ShotsLeftCounter").GetComponent<Text>().text = shotsLeft.ToString();
+        //GameObject.FindGameObjectWithTag("TargetsLeftCounter").GetComponent<Text>().text = targetsLeft.ToString();
+    }
+
+    private void LevelFailed()
+    {
+        //GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "GAME OVER";
+    }
+
+    private void LevelComplete()
+    {
+        if(SceneManager.GetActiveScene().buildIndex == lastLevelIndex)
+        {
+            //GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "GAME COMPLETE";
+        }
+        else
+        {
+            //GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "LEVEL COMPLETE";
+            endLevelButton.gameObject.SetActive(true);
+        }
     }
 }
 
