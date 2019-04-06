@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.XR;
 
 public class VRControl : Control
@@ -7,10 +10,14 @@ public class VRControl : Control
     bool canPlace = false;
     Vector3 currentHit;
     float placeCooldown = 0;
+    EventSystem eventSystem;
+    GraphicRaycaster UIRaycast;
 
     public void Start()
     {
         StartCoroutine(LoadDevice("cardboard"));
+        UIRaycast = GameObject.FindObjectOfType<GraphicRaycaster>();    //Every Canvas has its own GraphicRaycaster
+        eventSystem = GameObject.FindObjectOfType<EventSystem>();       //There is one EventSystem for every scene
     }
 
     IEnumerator LoadDevice(string newDevice)
@@ -69,18 +76,37 @@ public class VRControl : Control
         {
             currentHit = hit.point;
 
-            //indicator.transform.position = currentHit + hit.normal * 0.05f;
-            //indicator.transform.up = hit.normal;
-            //indicator.transform.localScale = Vector3.one * 2;
+            indicator.transform.position = currentHit + hit.normal * 0.05f;
+            indicator.transform.up = hit.normal;
+            indicator.transform.localScale = Vector3.one * 2;
 
-            // Vector3 lookAt = Vector3.Cross(-hit.normal, Camera.main.transform.right);
-            // lookAt = lookAt.y < 0 ? -lookAt : lookAt;
-            // indicator.transform.rotation = Quaternion.LookRotation(hit.point + lookAt, hit.normal);
-            // Debug.Log(hit.point);
+            Vector3 lookAt = Vector3.Cross(-hit.normal, Camera.main.transform.right);
+            lookAt = lookAt.y < 0 ? -lookAt : lookAt;
+            indicator.transform.rotation = Quaternion.LookRotation(hit.point + lookAt, hit.normal);
+            
         }
         else
         {
             currentHit = Vector3.zero;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))    //Useful in Unity editor, needs to change in build 
+        {
+            var pointerData = new PointerEventData(eventSystem);
+            pointerData.position = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);  //Set here the pixel position of where you need to click
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            UIRaycast.Raycast(pointerData, results);    //Raycasts
+
+            foreach (RaycastResult result in results)
+            {
+                Button btn = result.gameObject.GetComponent<Button>();  //If raycasted button, click it
+                if (btn != null)
+                {
+                    btn.onClick.Invoke();
+                }
+            }
+
         }
     }
 }
