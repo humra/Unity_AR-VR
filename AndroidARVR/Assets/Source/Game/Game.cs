@@ -41,16 +41,14 @@ public class Game : MonoBehaviour
         UpdateUI();
         endLevelButton = GameObject.FindGameObjectWithTag("NextLevelButton").GetComponent<Button>();
         endLevelButton.gameObject.SetActive(false);
-        //GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "";
+        GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "";
     }
 
     public void Update()
     {
         var placementPose = currentControl.getPlacementPose();
-        if(placementPose != null && shotsLeft > 0)
+        if(placementPose != null && shotsLeft > 0 && targetsLeft > 0)
         {
-            //This will instantiate the object if it is valid
-            //Instantiate(objectToPlace, placementPose.pose.position, placementPose.pose.rotation);
             Instantiate(objectToPlace, Camera.main.transform.position + Camera.main.transform.forward * 1f, Camera.main.transform.rotation);
             shotsLeft--;
             UpdateUI();
@@ -80,25 +78,28 @@ public class Game : MonoBehaviour
 
     private void UpdateUI()
     {
-        //GameObject.FindGameObjectWithTag("ShotsLeftCounter").GetComponent<Text>().text = shotsLeft.ToString();
-        //GameObject.FindGameObjectWithTag("TargetsLeftCounter").GetComponent<Text>().text = targetsLeft.ToString();
+        GameObject.FindGameObjectWithTag("ShotsLeftCounter").GetComponent<Text>().text = shotsLeft.ToString();
+        GameObject.FindGameObjectWithTag("TargetsLeftCounter").GetComponent<Text>().text = targetsLeft.ToString();
     }
 
     private void LevelFailed()
     {
-        //GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "GAME OVER";
+        GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "GAME OVER";
     }
 
     private void LevelComplete()
     {
         if(SceneManager.GetActiveScene().buildIndex == lastLevelIndex)
         {
-            //GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "GAME COMPLETE";
+            GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "GAME COMPLETE";
         }
         else
         {
-            //GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "LEVEL COMPLETE";
-            endLevelButton.gameObject.SetActive(true);
+            GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "LEVEL COMPLETE";
+            if(SceneManager.GetActiveScene().buildIndex != lastLevelIndex)
+            {
+                endLevelButton.gameObject.SetActive(true);
+            }
         }
     }
 }

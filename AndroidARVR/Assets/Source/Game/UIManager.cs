@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour
 
     public void NextLevel()
     {
+        XRSettings.enabled = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

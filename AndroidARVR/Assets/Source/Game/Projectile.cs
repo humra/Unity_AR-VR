@@ -24,7 +24,7 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag.Equals("ProjectileDestroyer"))
+        if(collision.gameObject.tag.Equals("ProjectileDestroyer") || collision.gameObject.tag.Equals("Floor"))
         {
             Destroy(gameObject);
         }
