@@ -89,17 +89,14 @@ public class Game : MonoBehaviour
 
     private void LevelComplete()
     {
-        if(SceneManager.GetActiveScene().buildIndex == lastLevelIndex)
+        if(SceneManager.GetActiveScene().name == "Level02" || SceneManager.GetActiveScene().name == "Level02AR")
         {
             GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "GAME COMPLETE";
         }
         else
         {
             GameObject.FindGameObjectWithTag("EndLevelText").GetComponent<Text>().text = "LEVEL COMPLETE";
-            if(SceneManager.GetActiveScene().buildIndex != lastLevelIndex)
-            {
-                endLevelButton.gameObject.SetActive(true);
-            }
+            endLevelButton.gameObject.SetActive(true);
         }
     }
 }

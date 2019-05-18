@@ -32,16 +32,6 @@ public class VRControl : Control
 
     public override PlacementPose getPlacementPose()
     {
-        //if (canPlace && placeCooldown <= 0 && currentHit != Vector3.zero)
-        //{
-        //    placeCooldown = 2f;
-        //    return new PlacementPose()
-        //    {
-        //        pose = new Pose(currentHit, Math.getBearing(Camera.main.transform.forward))
-        //    };
-        //}
-
-        //return null;
         if(canPlace && placeCooldown <= 0)
         {
             placeCooldown = 2f;

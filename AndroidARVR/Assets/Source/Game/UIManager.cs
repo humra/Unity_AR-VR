@@ -4,16 +4,11 @@ using UnityEngine.XR;
 
 public class UIManager : MonoBehaviour
 {
-    public void buttonTest()
-    {
-        Debug.Log("Button clicked!");
-    }
 
     public void MainMenu()
     {
         XRSettings.enabled = false;
-
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void RestartLevel()

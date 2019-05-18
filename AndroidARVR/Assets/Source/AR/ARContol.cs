@@ -1,66 +1,59 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.XR.ARFoundation;
+﻿using UnityEngine;
 using UnityEngine.XR;
-using UnityEngine.Experimental.XR;
-using System;
+using UnityEngine.XR.ARFoundation;
 
 public class ARContol : Control
 {
     ARSessionOrigin arOrigin;
     Pose placementPose;
     bool placementPoseIsValid;
+    float placeCooldown = 0;
+    float startTime;
+    bool readsInput = false;
+    bool shoot = false;
 
     void Start()
     {
         XRSettings.LoadDeviceByName("");
         arOrigin = FindObjectOfType<ARSessionOrigin>();
-    }
-
-    void Update()
-    {
-        updatePlacementPose();
-        updatePlacementIndicator();
-    }
-
-    void updatePlacementIndicator()
-    {
-        if (placementPoseIsValid)
-        {
-            indicator.SetActive(true);
-            indicator.transform.position = placementPose.position;
-        }
-        else
-        {
-            indicator.SetActive(false);
-        }
-    }
-
-    void updatePlacementPose()
-    {
-        var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f));
-
-        bool success = Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, 1000);
-        placementPoseIsValid = success;
-        if (success)
-        {
-            placementPose.position = hit.point + hit.normal * 0.05f;
-            indicator.transform.up = hit.normal;
-            placementPose.rotation = Math.getBearing(Camera.current.transform.forward);
-        }
+        startTime = Time.time;
     }
 
     public override PlacementPose getPlacementPose()
     {
-        if (placementPoseIsValid && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        if (placeCooldown <= 0 && shoot)
         {
+            placeCooldown = 2f;
+            shoot = false;
+
             return new PlacementPose()
             {
-                pose = placementPose
+                pose = new Pose(Camera.main.transform.position, Quaternion.identity)
             };
         }
 
         return null;
+    }
+
+    public void Update()
+    {
+
+        if (Time.time > startTime + 3f)
+        {
+            readsInput = true;
+        }
+
+        if (placeCooldown > 0)
+        {
+            placeCooldown -= Time.deltaTime;
+        }
+
+        if(Input.touchCount > 0 && readsInput && placeCooldown <= 0)
+        {
+            if(Input.GetTouch(0).phase == TouchPhase.Began)
+            {
+                shoot = true;
+            }
+        }
     }
 }

@@ -6,17 +6,22 @@ public class MainMenu : MonoBehaviour
     public void startARGame()
     {
         Game.currentControlType = ControlType.AR;
-        loadScene();
+        loadARScene();
     }
 
     public void startVRGame()
     {
         Game.currentControlType = ControlType.VR;
-        loadScene();
+        loadVRScene();
     }
 
-    void loadScene()
+    void loadVRScene()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("Level01");
+    }
+
+    void loadARScene()
+    {
+        SceneManager.LoadScene("Level01AR");
     }
 }
